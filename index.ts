@@ -24,6 +24,10 @@ app.get("/", (req, res) => {
 
 })
 
+app.get("/style.css", (req, res) => {
+    res.sendFile(path.join(__dirname, "views/style.css"));
+})
+
 app.listen(port, (err) => {
     if (err) {
         console.error(err);
