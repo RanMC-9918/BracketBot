@@ -1,5 +1,9 @@
 
 
+.title > * {
+    line-height: 3rem;
+}
+
 .title h1{
     font-size: 3em;
 }
@@ -7,9 +11,21 @@
 
 .title h2{
     font-size: 2em;
+    font-weight: 300;
 }
 
 
 .title h3{
-    font-size: 0.5em;
+    font-size: 1em;
+    font-weight: 300;
+}
+
+.title {
+    font-size: 1em;
+    text-align: center;
+    margin: 20px auto;
+    padding: 20px;
+    background: linear-gradient(-10deg, transparent, #373c58);
+    width: max-content;
+    border-radius: 1em;
 }

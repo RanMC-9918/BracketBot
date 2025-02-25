@@ -10,8 +10,10 @@
 
 body {
 
-    --background: #050c2c;
-    --textcolor: #ebe2e2;
+    --background: #FBF2C0;
+    --textcolor: #48392A;
+    --tertiary: #C06E52;
+    --secondary: #43281C;
     
     font-family: "Noto Sans", sans-serif;
     font-size: 1rem;
@@ -19,12 +21,26 @@ body {
     background-color: var(--background);
 }
 
-.title {
+.node-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.node {
     font-size: 1em;
     text-align: center;
     margin: 20px auto;
     padding: 20px;
-    background: linear-gradient(-10deg, transparent, #373c58);
-    width: max-content;
     border-radius: 1em;
+    border: 3px var(--tertiary) solid;
+}
+
+
+.node:has(.player.not-started){
+    background-color: #f8aa62;
+}
+
+.node:has(#current-matchup){
+    background-color: #f8e918;
 }

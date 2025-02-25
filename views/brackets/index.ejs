@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bracket Bot - <%= title %></title>
+    <%- include("../components/head.ejs") %>
+  </head>
+  <body>
+    <h1 class="banner">
+      <%= title %> - <%= (matchups.length-matchupsPlayed-1) %> matchups left
+    </h1>
+    <div class="node-container">
+    <% let rowCursor = -1 %>
+    <% let matchupIndex = -players.length-1; %>
+      <% for(let i = players.length; i >= 1; i /= 2) { %>
+        <%rowCursor += 1 %>
+      <div class="node-row">
+        <% for(let j = 0; j < i; j++) { %>
+        <div class="node">
+            <% matchupIndex += 1 %>
+            <% if (matchupIndex < matchupsPlayed) { %>
+                <div class="player"><%= mappedPlayers[rowCursor][j] %></div>
+            <% } else if (matchupIndex == matchupsPlayed) { %>
+                <div class="player" id="current-matchup">In progress</div>
+            <% } else { %>
+                <div class="player not-started">Not started</div>
+            <% } %>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
