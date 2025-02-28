@@ -1,8 +1,48 @@
 .banner {
   background-color: var(--tertiary);
-  padding: 10px;
+  padding: 15px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   font-size: 1.4em;
   color: var(--secondary);
+}
+
+.node-container{
+  overflow-x: scroll;
+}
+
+
+.node-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.img-row{
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.img-row *{
+  height: 100%;
+  flex: 1;
+}
+
+.img-row img:nth-child(odd){
+  scale: -1 1;
+}
+
+.node {
+    margin: 0px auto;
+}
+
+.node:has(.player.not-started){
+    background-color: #e79447;
+}
+
+.node:has(#current-matchup){
+    background-color: #fdef29;
 }

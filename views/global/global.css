@@ -14,6 +14,8 @@ body {
     --textcolor: #48392A;
     --tertiary: #C06E52;
     --secondary: #43281C;
+
+    scroll-behavior: smooth;
     
     font-family: "Noto Sans", sans-serif;
     font-size: 1rem;
@@ -21,26 +23,14 @@ body {
     background-color: var(--background);
 }
 
-.node-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
 
 .node {
+    width: max-content;
     font-size: 1em;
     text-align: center;
-    margin: 20px auto;
+    margin: 0px max(10px, auto);
     padding: 20px;
     border-radius: 1em;
     border: 3px var(--tertiary) solid;
 }
 
-
-.node:has(.player.not-started){
-    background-color: #f8aa62;
-}
-
-.node:has(#current-matchup){
-    background-color: #f8e918;
-}

@@ -8,7 +8,26 @@
   </head>
   <body>
     <h1 class="banner">
-      <%= title %> - <%= (matchups.length-matchupsPlayed-1) %> matchups left
+      <%= title %> - <%= (matchups.length-matchupsPlayed-1) %> matchups left - 
+      <% if (matchups.length-matchupsPlayed-1 == 0) { %>
+        Congrats <%= mappedPlayers[mappedPlayers.length-1][0] %>
+      <% } else if (mappedPlayers.length > 1 && mappedPlayers[mappedPlayers.length-1].length == mappedPlayers[mappedPlayers.length-2].length/2) { %>
+        <%= 
+          mappedPlayers[mappedPlayers.length-1][0]
+        %>
+        vs.
+        <%=
+          mappedPlayers[mappedPlayers.length-1][1]
+        %>
+      <% } else { %>
+        <%= 
+          mappedPlayers[mappedPlayers.length-2][2 * mappedPlayers[mappedPlayers.length-1].length]
+        %>
+        vs.
+        <%=
+          mappedPlayers[mappedPlayers.length-2][2 * mappedPlayers[mappedPlayers.length-1].length + 1]
+        %>
+      <% } %>
     </h1>
     <div class="node-container">
     <% let rowCursor = -1 %>
@@ -19,16 +38,27 @@
         <% for(let j = 0; j < i; j++) { %>
         <div class="node">
             <% matchupIndex += 1 %>
-            <% if (matchupIndex < matchupsPlayed) { %>
+            <% if (matchupIndex <= matchupsPlayed) { %>
                 <div class="player"><%= mappedPlayers[rowCursor][j] %></div>
-            <% } else if (matchupIndex == matchupsPlayed) { %>
+            <% } else if (matchupIndex == matchupsPlayed + 1) { %>
                 <div class="player" id="current-matchup">In progress</div>
             <% } else { %>
                 <div class="player not-started">Not started</div>
             <% } %>
         </div>
         <% } %>
+
       </div>
+
+      <div class="img-row">
+          <% for(let j = 0; j < Math.floor(i/2); j++) { %>
+            <div class="spacer"></div>
+            <img src="../images/path.png" alt="arrow" />
+            <img src="../images/path.png" alt="arrow" />
+            <div class="spacer"></div>
+          <% } %>
+      </div>
+
       <% } %>
     </div>
   </body>
