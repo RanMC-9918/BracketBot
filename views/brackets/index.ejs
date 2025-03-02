@@ -31,7 +31,7 @@
     </h1>
     <div class="node-container">
     <% let rowCursor = -1 %>
-    <% let matchupIndex = -players.length-1; %>
+    <% let matchupIndex = -players.length; %>
       <% for(let i = players.length; i >= 1; i /= 2) { %>
         <%rowCursor += 1 %>
       <div class="node-row">
@@ -40,7 +40,7 @@
             <% matchupIndex += 1 %>
             <% if (matchupIndex <= matchupsPlayed) { %>
                 <div class="player"><%= mappedPlayers[rowCursor][j] %></div>
-            <% } else if (matchupIndex == matchupsPlayed + 1) { %>
+            <% } else if (matchupIndex == matchupsPlayed+1) { %>
                 <div class="player" id="current-matchup">In progress</div>
             <% } else { %>
                 <div class="player not-started">Not started</div>

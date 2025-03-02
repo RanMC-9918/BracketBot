@@ -11,6 +11,7 @@ import ejs from "ejs";
 import { register } from "module";
 
 import enviornment = require("dotenv");
+import { match } from "assert";
 enviornment.config();
 
 
@@ -101,31 +102,6 @@ app.listen(port, (err) => {
 
 
 
-function mapPlayers(players: string[], matchups: boolean[], matchupsPlayed: number) {
-    let mappedPlayers: string[][] = [players, []];
-    let rowCursor = 1;
-    
-    for (let i = 0; i <= matchupsPlayed; i++) {
-        if (mappedPlayers[rowCursor].length >= mappedPlayers[rowCursor-1].length/2){
-            rowCursor++;
-            mappedPlayers.push([]);
-        }
-        if (matchups[i]) {
-        mappedPlayers[rowCursor].push(
-          mappedPlayers[rowCursor - 1][mappedPlayers[rowCursor].length * 2 + 1]
-        );
-        } else {
-        mappedPlayers[rowCursor].push(
-          mappedPlayers[rowCursor - 1][mappedPlayers[rowCursor].length * 2]
-        );
-        }
-    }
-
-    console.log(mappedPlayers)
-    return mappedPlayers;
-
-}
-
 //DISCORD
 
 const botID = "1345091131368673281";
@@ -147,11 +123,6 @@ const commands = [
             option.setName("title")
             .setDescription("The title of the bracket")
             .setRequired(true)
-        )
-        .addIntegerOption(
-            option =>
-            option.setName("players")
-            .setDescription("The number of players in the bracket")
         )
 ]
 
@@ -207,7 +178,7 @@ bot.on("interactionCreate", async (interaction) => {
 
             
             await interaction.reply(
-              "Bracket created at " + "http://localhost:8080/brackets/" + id
+              "New bracket called *" + interaction.options.get("title").value + "* created at " + "http://localhost:8080/brackets/" + id
               + "\nThank you for using our service."
             );
 
@@ -221,7 +192,9 @@ bot.on("interactionCreate", async (interaction) => {
             });
 
 
-            const message = await interaction.followUp({content: "Join by reacting 🤚\nStart early by reacting ➡️ (only the owner)", fetchReply: true});
+            const message = await interaction.followUp({content: 
+                "Join by reacting 🤚\nStart by reacting ➡️ (only the owner)"
+                , fetchReply: true});
             
             await message.react("🤚");
             await message.react("➡️")
@@ -240,14 +213,163 @@ bot.on("messageReactionAdd", async (reaction, user) => {
 
     console.log(user.username)
 
-    const bracketThread = bracketThreads.find(thread => thread.messageId === reaction.message.id);
-    const bracket = brackets.find(bracket => bracket.id == bracketThread.bracketId);
-    bracket.players.push(user.username);
-    bracket.matchups.push(false);
+    if(reaction.emoji.name == "➡️"){
 
-    reaction.message.channel.isSendable() && reaction.message.channel.send(`<@${user.id}> has joined the bracket.`);
+        const bracketThread = bracketThreads.find(
+          (thread) => thread.messageId === reaction.message.id
+        );
+
+        const bracket = brackets.find(
+          (bracket) => bracket.id == bracketThread.bracketId
+        );
+
+        if(user.id !== bracket.ownerId){
+            reaction.message.channel.isSendable() &&
+              reaction.message.channel.send(
+                `<@${user.id}> You are not the owner of this bracket.`
+              );
+            return;
+        }
+
+        if(bracket.players.length < 2){
+
+            bracket.players.push("Friend 1")
+            bracket.players.push("Friend 2");
+            bracket.players.push("Friend 3");
+            bracket.players.push("Friend 4");
+
+            bracket.matchups.push(false);
+            bracket.matchups.push(false);
+            bracket.matchups.push(false);
+            bracket.matchups.push(false);
+
+            // reaction.message.channel.isSendable() &&
+            //   reaction.message.channel.send(
+            //     `<@${user.id}> There needs to be at least 2 players in a bracket.`
+            //   );
+            // return;
+        }
+
+        if(bracket.matchupsPlayed > 0){
+            reaction.message.channel.isSendable() &&
+              reaction.message.channel.send(
+                `<@${user.id}> The bracket has already started.`
+              );
+            return;
+        }
+
+        if(Math.log(bracket.players.length)/Math.log(2) % 1 !== 0){
+            while(Math.log(bracket.players.length)/Math.log(2) % 1 !== 0){
+                bracket.players.push("Bye");
+                bracket.matchups.push(false);
+            }
+        }
+
+        bracket.matchups.pop();
+        runMatchup(bracket, reaction.message.channel);
+        
+    }
+
+    if(reaction.emoji.name == "🤚"){
+
+        const bracketThread = bracketThreads.find(
+          (thread) => thread.messageId === reaction.message.id
+        );
+
+        const bracket = brackets.find(
+          (bracket) => bracket.id == bracketThread.bracketId
+        );
+
+        if(bracket.players.includes(user.username)){
+            reaction.message.channel.isSendable() &&
+              reaction.message.channel.send(
+                `<@${user.id}> You are already in the bracket.`
+              );
+            return;
+        }
+
+        if(bracket.matchupsPlayed > 0){
+            reaction.message.channel.isSendable() &&
+              reaction.message.channel.send(
+                `<@${user.id}> The bracket has already started.`
+              );
+            return;
+        }
+
+        bracket.players.push(user.username);
+
+        bracket.matchups.push(false);
+
+        reaction.message.channel.isSendable() &&
+            reaction.message.channel.send(
+            `<@${user.id}> has joined the bracket.`
+            );
+
+    }
+
+    
+
 
 })
+
+async function runMatchup(bracket:bracket, channel: any){
+    if(!channel.isSendable()){
+        return;
+    }
+
+    let map = mapPlayers(bracket.players, bracket.matchups, bracket.matchupsPlayed);
+
+    await channel.send(`[Next Matchup](http://localhost:8080/brackets/${bracket.id})\n${getCurrentMatchup(map)[0]} vs ${getCurrentMatchup(map)[1]}`);
+}
+
+function getCurrentMatchup(mappedPlayers: string[][]){
+    if (mappedPlayers.length > 1 && mappedPlayers[mappedPlayers.length-1].length == mappedPlayers[mappedPlayers.length-2].length/2) {
+          return [mappedPlayers[mappedPlayers.length-1][0], mappedPlayers[mappedPlayers.length-1][1]]
+    } 
+    else { 
+        return [mappedPlayers[mappedPlayers.length-2][2 * mappedPlayers[mappedPlayers.length-1].length],
+          mappedPlayers[mappedPlayers.length-2][2 * mappedPlayers[mappedPlayers.length-1].length + 1]]
+    }
+
+}
+
+function mapPlayers(
+  players: string[],
+  matchups: boolean[],
+  matchupsPlayed: number
+) {
+  let mappedPlayers: string[][] = [players, []];
+  let rowCursor = 1;
+
+  if(matchupsPlayed === 0){
+        return mappedPlayers;
+}
+
+  for (let i = 0; i <= matchupsPlayed; i++) {
+    if (matchups[i]) {
+      mappedPlayers[rowCursor].push(
+        mappedPlayers[rowCursor - 1][mappedPlayers[rowCursor].length * 2 + 1]
+      );
+    } else {
+      mappedPlayers[rowCursor].push(
+        mappedPlayers[rowCursor - 1][mappedPlayers[rowCursor].length * 2]
+      );
+    }
+    if (
+      mappedPlayers[rowCursor].length >=
+      mappedPlayers[rowCursor - 1].length / 2
+    ) {
+      rowCursor++;
+      mappedPlayers.push([]);
+    }
+  }
+
+  console.log(mappedPlayers);
+  console.log(players);
+console.log(matchups);
+  console.log(matchupsPlayed);
+  return mappedPlayers;
+}
 
 bot.login(token);
 

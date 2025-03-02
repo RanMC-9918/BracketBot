@@ -36,8 +36,10 @@
 }
 
 .node {
-    margin: 0px auto;
+  width: 100px;
+  margin: 0 auto;
 }
+
 
 .node:has(.player.not-started){
     background-color: #e79447;
