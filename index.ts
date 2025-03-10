@@ -204,6 +204,8 @@ bot.on("interactionCreate", async (interaction) => {
                 bracketId: id,
                 messageId: message.id
             });
+
+            console.log(brackets);
             
             break; 
     }
