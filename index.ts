@@ -14,6 +14,7 @@ import enviornment = require("dotenv");
 import { match } from "assert";
 enviornment.config();
 
+const urlOrigin = process.env.origin || "http://localhost:8080";
 
 const port = 8080;
 
@@ -178,7 +179,7 @@ bot.on("interactionCreate", async (interaction) => {
 
             
             await interaction.reply(
-              "New bracket called *" + interaction.options.get("title").value + "* created at " + "http://localhost:8080/brackets/" + id
+              "New bracket called *" + interaction.options.get("title").value + "* created at " + urlOrigin + "/brackets/" + id
               + "\nThank you for using our service."
             );
 
@@ -319,7 +320,7 @@ async function runMatchup(bracket:bracket, channel: any){
 
     let map = mapPlayers(bracket.players, bracket.matchups, bracket.matchupsPlayed);
 
-    await channel.send(`[Next Matchup](http://localhost:8080/brackets/${bracket.id})\n${getCurrentMatchup(map)[0]} vs ${getCurrentMatchup(map)[1]}`);
+    await channel.send(`[Next Matchup](${urlOrigin}/brackets/${bracket.id})\n${getCurrentMatchup(map)[0]} vs ${getCurrentMatchup(map)[1]}`);
 }
 
 function getCurrentMatchup(mappedPlayers: string[][]){
